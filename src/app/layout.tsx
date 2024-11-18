@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import ReduxWrapper from "../../redux/ReduxWrapper";
 import "./globals.css";
 import ProviderWrapper from "./ProviderWrapper";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <ReduxWrapper>
-      <html lang="en">
+      <html lang="en" className={inter.className}>
         <body>
           <ProviderWrapper>{children}</ProviderWrapper>
         </body>

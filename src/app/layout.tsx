@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import ReduxWrapper from "../../redux/ReduxWrapper";
-import { SnackbarProvider } from "notistack";
+import "./globals.css";
 import ProviderWrapper from "./ProviderWrapper";
 
 export const metadata: Metadata = {

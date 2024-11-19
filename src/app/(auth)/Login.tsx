@@ -11,10 +11,11 @@ import {
   InputLabel,
   Paper,
   Stack,
-  Typography
+  Typography,
 } from "@mui/material";
 import { Field, Formik } from "formik";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import React from "react";
 import * as yup from "yup";
@@ -23,6 +24,7 @@ const validationSchema = yup.object({
   password: yup.string().required(),
 });
 function Login() {
+  const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -65,6 +67,7 @@ function Login() {
       const data = await response.json();
       localStorage.setItem("token", data.refreshToken);
       // You might want to redirect here or update your auth state
+      router.replace("/dashboard");
       enqueueSnackbar("Login successful", { variant: "success" });
     } catch (error) {
       console.error("Login error:", error);

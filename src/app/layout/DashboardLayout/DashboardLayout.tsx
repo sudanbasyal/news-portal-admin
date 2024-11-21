@@ -13,16 +13,25 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { useRouter } from "next/navigation"; // Ensure correct import
+import { usePathname, useRouter } from "next/navigation"; // Ensure correct import
 import { useState } from "react";
 import { menuItems } from "./menuItems";
+import { useDispatch, useSelector } from "react-redux";
+import { setSelectedItem } from "../../../../redux/features/dashboard";
 
 const drawerWidth = 240;
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname();
+  const tab = pathname.split("/")[2];
+  const dispatch = useDispatch();
   const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter(); // Ensure router is initialized
-
+  const selectedItem = useSelector(
+    (state: { dashboard: { selectedItem: number | null } }) =>
+      state.dashboard.selectedItem
+  );
+  console.log(selectedItem);
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -42,7 +51,14 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <Toolbar />
       <List>
         {menuItems.map((item) => (
-          <ListItemButton onClick={() => handleNavigation(item.path)}>
+          <ListItemButton
+            key={item.id}
+            selected={tab === item.title.toLowerCase()}
+            onClick={() => {
+              handleNavigation(item.path);
+              dispatch(setSelectedItem(item.id));
+            }}
+          >
             <ListItemIcon>
               <item.icon />
             </ListItemIcon>

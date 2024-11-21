@@ -17,13 +17,17 @@ import {
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useRouter } from "next/navigation";
-import { useGetAllArticlesQuery } from "../../../../redux/services/articles";
+import {
+  useChangeArticleStatusMutation,
+  useGetAllArticlesQuery,
+} from "../../../../redux/services/articles";
 import { Article } from "../../../../interface/article";
 import Image from "next/image";
 
 const Page = () => {
   const router = useRouter();
   const { data, isLoading, isError } = useGetAllArticlesQuery();
+  const [updateStatus] = useChangeArticleStatusMutation();
   const [filter, setFilter] = useState("All");
   const articles: Article[] = data?.data || [];
 
@@ -114,7 +118,7 @@ const Page = () => {
                   />
                 ) : (
                   <Image
-                    src="/path/to/fallback-image.jpg" // Provide a fallback image if none is available
+                    src="/fallback.png" // Provide a fallback image if none is available
                     title={article.title}
                     alt="Fallback image"
                     width={345}
@@ -122,7 +126,6 @@ const Page = () => {
                   />
                 )}
               </CardMedia>
-
               <CardContent>
                 <Typography gutterBottom variant="h6" component="div">
                   {article.title}
@@ -161,11 +164,22 @@ const Page = () => {
                   <Button
                     size="small"
                     color="primary"
-                    onClick={() => handleUpdateStatus(article.id, "draft")}
+                    onClick={() => handleUpdateStatus(article.id, "archived")}
                   >
-                    Unpublish
+                    Archive
                   </Button>
                 )}
+
+                <Button
+                  size="small"
+                  color="secondary"
+                  variant="outlined"
+                  onClick={() =>
+                    router.push(`/dashboard/edit-article/${article.id}`)
+                  }
+                >
+                  Edit
+                </Button>
               </CardActions>
             </Card>
           ))}

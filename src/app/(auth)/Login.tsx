@@ -67,7 +67,7 @@ function Login() {
       const data = await response.json();
       localStorage.setItem("token", data.refreshToken);
       // You might want to redirect here or update your auth state
-      router.replace("/dashboard");
+      router.replace("/dashboard/article");
       enqueueSnackbar("Login successful", { variant: "success" });
     } catch (error) {
       console.error("Login error:", error);

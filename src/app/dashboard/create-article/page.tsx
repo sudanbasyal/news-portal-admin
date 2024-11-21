@@ -105,7 +105,7 @@ const ArticleForm = () => {
           isBreaking: false,
           categoryId: selectedCategory,
         }}
-        validationSchema={validationSchema}
+        // validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {({ setFieldValue, values, touched, errors }) => (
@@ -182,7 +182,9 @@ const ArticleForm = () => {
                   label="Breaking News"
                   name="isBreaking"
                   value={values.isBreaking}
-                  onChange={(e) => setFieldValue("isBreaking", e.target.value)}
+                  onChange={(e) => {
+                    setFieldValue("isBreaking", e.target.value);
+                  }}
                 >
                   <MenuItem value={1}>Yes</MenuItem>
                   <MenuItem value={0}>No</MenuItem>

@@ -34,5 +34,6 @@ const baseQueryWithLogout: BaseQueryFn<
 
 export const api = createApi({
   baseQuery: baseQueryWithLogout,
+  tagTypes: ["Article"],
   endpoints: () => ({}),
 });

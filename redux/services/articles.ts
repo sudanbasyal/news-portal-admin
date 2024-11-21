@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Article, ArticleResponse } from '../../interface/article';
+import { Article, ArticleApiResponse, ArticleResponse } from '../../interface/article';
 import { api } from '../api';
+
 
 export const articlesApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,8 +10,9 @@ export const articlesApi = api.injectEndpoints({
         url: '/article/all',
         method: 'GET',
       }),
+      providesTags: [ { type: 'Article', id: 'LIST' }],
     }),
-    getArticleById: builder.query<Article, number>({
+    getArticleById: builder.query<ArticleApiResponse, string>({
       query: (id) => ({
         url: `/article/${id}`,
         method: 'GET',
@@ -22,15 +24,18 @@ export const articlesApi = api.injectEndpoints({
         method: 'POST',
         body: articleData,
       }),
+      invalidatesTags: [{ type: 'Article', id: 'LIST' }],
     }),
-    updateArticle: builder.mutation<Article, { id: number; articleData: FormData }>({
-      query: ({ id, articleData }) => ({
-        url: `/articleP/${id}`,
-        method: 'PATCH',
-        body: articleData,
-      }),
+    updateArticle: builder.mutation<Article, { id: string; articleData: FormData }>({
+      query: ({ id, articleData }) =>  ({
+          url: `/article/${id}`,
+          method: 'PATCH',
+          body: articleData,
+        }),
+        invalidatesTags:[ { type: 'Article', id: 'LIST' }],
+      
     }),
-    changeArticleStatus: builder.mutation<Article, { id: number; status: 'Draft' | 'Published' | 'Archived' }>({
+    changeArticleStatus: builder.mutation<Article, { id: number; status: 'draft' | 'published' | 'archived' }>({
       query: ({ id, status }) => ({
         url: `/article/${id}/status`,
         method: 'PATCH',

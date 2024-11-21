@@ -1,8 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { api } from "./api"; // Import your RTK Query API
-
+import dashboardSlice from "./features/dashboard"; // Import your slice
 export const store = configureStore({
   reducer: {
+    dashboard : dashboardSlice,
     // Add your API reducer here
     [api.reducerPath]: api.reducer,
   },

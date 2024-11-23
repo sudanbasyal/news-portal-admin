@@ -1,5 +1,4 @@
 import AuthWrapper from "../layout/AuthWrapper";
-import DashboardLayout from "../layout/DashboardLayout/DashboardLayout";
 
 export default function RootLayout({
   children,

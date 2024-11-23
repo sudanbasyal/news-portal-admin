@@ -41,6 +41,7 @@ export const articlesApi = api.injectEndpoints({
         method: 'PATCH',
         body: { status },
       }),
+      invalidatesTags: [{ type: 'Article', id: 'LIST' }],
     }),
   }),
   overrideExisting: false, // Set to true if you want to override existing endpoints

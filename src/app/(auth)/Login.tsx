@@ -96,7 +96,9 @@ function Login() {
         height={100}
         style={{ borderRadius: "50%", marginBottom: 8, objectFit: "contain" }}
       />
-      <Paper sx={{ padding: 4, width: "25%" }}>
+      <Paper
+        sx={{ padding: { xs: 2, md: 4 }, width: { xs: "75%", md: "25%" } }}
+      >
         <Stack spacing={2}>
           <Typography variant="h4" sx={{ textAlign: "center" }}>
             Login

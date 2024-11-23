@@ -5,19 +5,23 @@ import {
   Box,
   CssBaseline,
   Drawer,
+  Grid2,
   IconButton,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Stack,
   Toolbar,
   Typography,
 } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation"; // Ensure correct import
 import { useState } from "react";
-import { menuItems } from "./menuItems";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setSelectedItem } from "../../../../redux/features/dashboard";
+import { menuItems } from "./menuItems";
+import { Logout } from "@mui/icons-material";
+import Image from "next/image";
 
 const drawerWidth = 240;
 
@@ -27,10 +31,6 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useDispatch();
   const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter(); // Ensure router is initialized
-  const selectedItem = useSelector(
-    (state: { dashboard: { selectedItem: number | null } }) =>
-      state.dashboard.selectedItem
-  );
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -38,7 +38,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token"); // Clear token (or session)
-    router.push("/login"); // Redirect to login
+    router.push("/"); // Redirect to login
   };
 
   const handleNavigation = (path: string) => {
@@ -47,8 +47,32 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   };
 
   const drawer = (
-    <Box>
-      <Toolbar />
+    <Stack
+      justifyContent="space-between"
+      sx={{ height: "calc(100% - 12px)", minWidth: "100%" }}
+    >
+      <Stack direction="row" justifyContent="center" alignItems="center">
+        <Grid2 container spacing={2} alignItems="center">
+          <Grid2 size={{ xs: 4 }}>
+            <Image
+              src="/logo.png"
+              alt="logo"
+              width={80}
+              height={80}
+              style={{
+                objectFit: "contain",
+              }}
+              unoptimized
+            />
+          </Grid2>
+          <Grid2 size={{ xs: 8 }}>
+            <Typography variant="h6" noWrap component="div">
+              News Portal
+            </Typography>
+          </Grid2>
+        </Grid2>
+      </Stack>
+
       <List>
         {menuItems.map((item) => (
           <ListItemButton
@@ -67,7 +91,15 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         ))}
       </List>
       <Box sx={{ flexGrow: 1 }} />
-    </Box>
+      <List>
+        <ListItemButton onClick={handleLogout}>
+          <ListItemIcon>
+            <Logout />
+          </ListItemIcon>
+          <ListItemText primary="Logout" />
+        </ListItemButton>
+      </List>
+    </Stack>
   );
 
   return (
@@ -75,6 +107,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <CssBaseline />
       <AppBar
         position="fixed"
+        // color="error"
         sx={{
           width: { md: `calc(100% - ${drawerWidth}px)` },
           ml: { md: `${drawerWidth}px` },

@@ -2,7 +2,7 @@
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import EditIcon from "@mui/icons-material/Edit";
-import Box from "@mui/material/Box";
+import { Grid2, useMediaQuery } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -15,6 +15,7 @@ import {
   GridColDef,
   GridRowId,
 } from "@mui/x-data-grid";
+import { useSnackbar } from "notistack";
 import * as React from "react";
 import { Category } from "../../../../interface/category";
 import {
@@ -23,8 +24,6 @@ import {
   useGetCategoriesQuery,
   useUpdateCategoryMutation,
 } from "../../../../redux/services/categories";
-import { useSnackbar } from "notistack";
-import { Grid2, useMediaQuery } from "@mui/material";
 
 export default function Page() {
   const { enqueueSnackbar } = useSnackbar();
@@ -121,11 +120,13 @@ export default function Page() {
       getActions: (params) => [
         <GridActionsCellItem
           icon={<EditIcon color="info" />}
+          key={`edit-${params.id}`}
           label="Edit"
           onClick={handleEditClick(params.row as Category)} // Pass the row data to handleEditClick
         />,
         <GridActionsCellItem
           icon={<DeleteIcon color="error" />}
+          key={`delete-${params.id}`}
           label="Delete"
           onClick={handleDeleteClick(params.id)}
         />,

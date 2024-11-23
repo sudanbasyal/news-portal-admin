@@ -5,15 +5,11 @@ import { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
-  const token = localStorage.getItem("token");
   useEffect(() => {
+    const token = localStorage.getItem("token");
     if (token) {
       router.replace("/dashboard");
     }
-  }, [token]);
-  return (
-    <div>
-      <Login />
-    </div>
-  );
+  }, []);
+  return <Login />;
 }

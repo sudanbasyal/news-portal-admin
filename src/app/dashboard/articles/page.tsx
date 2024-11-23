@@ -1,34 +1,31 @@
 "use client";
-import React, { useState } from "react";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {
   Box,
   Button,
   Card,
+  CardActions,
   CardContent,
-  Typography,
-  Stack,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
   CardMedia,
   Chip,
-  CardActions,
+  FormControl,
   Grid2,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+  SelectChangeEvent,
+  useMediaQuery,
 } from "@mui/material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { useRouter } from "next/navigation";
-import {
-  useChangeArticleStatusMutation,
-  useGetAllArticlesQuery,
-} from "../../../../redux/services/articles";
-import { Article } from "../../../../interface/article";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Article } from "../../../../interface/article";
+import { useGetAllArticlesQuery } from "../../../../redux/services/articles";
 
 const Page = () => {
   const router = useRouter();
   const { data, isLoading, isError } = useGetAllArticlesQuery();
-  const [updateStatus] = useChangeArticleStatusMutation();
   const [filter, setFilter] = useState("All");
   const articles: Article[] = data?.data || [];
 
@@ -36,20 +33,23 @@ const Page = () => {
     router.push("/dashboard/create-article"); // Navigate to the article creation page
   };
 
-  const handleStatusChange = (event: any) => {
+  const handleStatusChange = (event: SelectChangeEvent<string>) => {
     setFilter(event.target.value);
   };
 
   const handleUpdateStatus = (articleId: number, newStatus: string) => {
-    // Logic to update article status in the backend (via API)
     console.log(`Article ID: ${articleId} status changed to ${newStatus}`);
-    // Example: dispatch an action to update status in the store or send an API request
   };
 
   const filteredArticles = articles.filter(
     (article: Article) => filter === "All" || article.status === filter
   );
 
+  // const handleCardClick = (articleId: number) => {
+  //   router.push(`/dashboard/${articleId}/preview`); // Navigate to the preview page for the article
+  // };
+
+  const isMdDown = useMediaQuery((theme) => theme.breakpoints.down("md"));
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -65,17 +65,17 @@ const Page = () => {
         <Grid2 size={{ xs: 12, md: 6 }}>
           <Typography variant="h4">Articles Dashboard</Typography>
         </Grid2>
-        <Grid2 size={{ xs: 12, md: 6 }}>
+        <Grid2 size={{ xs: 12, md: 6 }} textAlign={isMdDown ? "start" : "end"}>
           <Button
             variant="contained"
             color="primary"
             startIcon={<AddCircleIcon />}
             onClick={handleCreateArticle}
           >
-            Create New Article
+            Add New
           </Button>
         </Grid2>
-        <Grid2 size={12}>
+        <Grid2 size={{ xs: 12 }}>
           <FormControl fullWidth>
             <InputLabel>Filter by Status</InputLabel>
             <Select
@@ -94,112 +94,130 @@ const Page = () => {
         {/* Filter Section */}
 
         {/* Article List */}
-        <Grid2 container spacing={2}>
-          <Grid2 size={12}>
-            <Typography variant="h6">
-              {filteredArticles.length
-                ? `Showing ${filteredArticles.length} articles`
-                : "No articles found"}
-            </Typography>
-          </Grid2>
-          {filteredArticles.length &&
-            filteredArticles.map((article) => (
-              <Grid2>
-                <Card sx={{ maxWidth: 345 }} key={article.id}>
-                  <CardMedia sx={{ height: 200 }}>
-                    {/* Check if the image URL is valid */}
-                    {article.image ? (
-                      <Image
-                        src={article.image} // Dynamic image source
-                        title={article.title}
-                        alt={article.title}
-                        width={345}
-                        height={200}
-                        style={{
-                          objectFit: "contain",
+        <Grid2 size={{ xs: 12 }}>
+          <Grid2 container spacing={2}>
+            <Grid2 size={{ xs: 12 }}>
+              <Typography variant="h6">
+                {filteredArticles.length
+                  ? `Showing ${filteredArticles.length} articles`
+                  : "No articles found"}
+              </Typography>
+            </Grid2>
+            {filteredArticles.length > 0 &&
+              filteredArticles.map((article) => (
+                <Grid2 key={article.id}>
+                  <Card
+                    sx={{
+                      maxWidth: 345,
+                      height: 500, // Fixed height for the card
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <CardMedia sx={{ height: 200 }}>
+                      {article.image ? (
+                        <Image
+                          src={article.image}
+                          title={article.title}
+                          alt={article.title}
+                          width={345}
+                          height={200}
+                          style={{
+                            objectFit: "contain",
+                          }}
+                        />
+                      ) : (
+                        <Image
+                          src="/fallback.png"
+                          title={article.title}
+                          alt="Fallback image"
+                          width={345}
+                          height={200}
+                        />
+                      )}
+                    </CardMedia>
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      {/* Ellipsis Title */}
+                      <Typography
+                        gutterBottom
+                        variant="h6"
+                        component="div"
+                        sx={{
+                          display: "-webkit-box",
+                          overflow: "hidden",
+                          WebkitBoxOrient: "vertical",
+                          WebkitLineClamp: 2, // Limit title to 2 lines
+                          textOverflow: "ellipsis",
                         }}
+                      >
+                        {article.title}
+                      </Typography>
+                      <Chip
+                        label={article.category.name}
+                        color="primary"
+                        sx={{ marginBottom: 2 }}
                       />
-                    ) : (
-                      <Image
-                        src="/fallback.png" // Provide a fallback image if none is available
-                        title={article.title}
-                        alt="Fallback image"
-                        width={345}
-                        height={200}
-                      />
-                    )}
-                  </CardMedia>
-                  <CardContent>
-                    <Typography gutterBottom variant="h6" component="div">
-                      {article.title}
-                    </Typography>
-                    <Chip
-                      label={article.category.name}
-                      color="primary"
-                      sx={{ marginBottom: 2 }}
-                    />
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "text.secondary" }}
-                    >
-                      Slug: {article.slug}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "text.secondary" }}
-                    >
-                      Views: {article.viewCount}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "text.secondary" }}
-                    >
-                      Status: {article.status}
-                    </Typography>
-                  </CardContent>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        Slug: {article.slug}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        Views: {article.viewCount}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        Status: {article.status}
+                      </Typography>
+                    </CardContent>
 
-                  {/* Card Actions with buttons for changing status */}
-                  <CardActions sx={{ justifyContent: "space-between" }}>
-                    {/* Draft Button: Only enabled if status is Draft */}
-                    {article.status === "draft" && (
+                    {/* Card Actions with buttons for changing status */}
+                    <CardActions sx={{ justifyContent: "space-between" }}>
+                      {article.status === "draft" && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() =>
+                            handleUpdateStatus(article.id, "published")
+                          }
+                        >
+                          Publish
+                        </Button>
+                      )}
+
+                      {article.status === "published" && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() =>
+                            handleUpdateStatus(article.id, "archived")
+                          }
+                        >
+                          Archive
+                        </Button>
+                      )}
+
                       <Button
                         size="small"
-                        color="primary"
+                        color="secondary"
+                        variant="outlined"
                         onClick={() =>
-                          handleUpdateStatus(article.id, "published")
+                          router.push(`/dashboard/edit-article/${article.id}`)
                         }
                       >
-                        Publish
+                        Edit
                       </Button>
-                    )}
-
-                    {/* Published Button: Only enabled if status is Published */}
-                    {article.status === "published" && (
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() =>
-                          handleUpdateStatus(article.id, "archived")
-                        }
-                      >
-                        Archive
-                      </Button>
-                    )}
-
-                    <Button
-                      size="small"
-                      color="secondary"
-                      variant="outlined"
-                      onClick={() =>
-                        router.push(`/dashboard/edit-article/${article.id}`)
-                      }
-                    >
-                      Edit
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid2>
-            ))}
+                    </CardActions>
+                  </Card>
+                </Grid2>
+              ))}
+          </Grid2>
         </Grid2>
       </Grid2>
     </Box>

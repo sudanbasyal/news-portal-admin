@@ -1,4 +1,4 @@
-import { Article, Category, Dashboard } from "@mui/icons-material";
+import { Article, Category } from "@mui/icons-material";
 
 export const menuItems = [{
     id:1,

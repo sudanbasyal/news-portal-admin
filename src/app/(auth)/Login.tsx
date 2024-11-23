@@ -67,7 +67,7 @@ function Login() {
       const data = await response.json();
       localStorage.setItem("token", data.refreshToken);
       // You might want to redirect here or update your auth state
-      router.replace("/dashboard/article");
+      router.replace("/dashboard/articles");
       enqueueSnackbar("Login successful", { variant: "success" });
     } catch (error) {
       console.error("Login error:", error);
@@ -84,7 +84,7 @@ function Login() {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
+        height: "97vh",
         width: "100%",
         backgroundColor: "white",
       }}
@@ -94,9 +94,9 @@ function Login() {
         alt="logo"
         width={100}
         height={100}
-        style={{ borderRadius: "50%", marginBottom: 16 }}
+        style={{ borderRadius: "50%", marginBottom: 8, objectFit: "contain" }}
       />
-      <Paper sx={{ padding: 4, width: "30%" }}>
+      <Paper sx={{ padding: 4, width: "25%" }}>
         <Stack spacing={2}>
           <Typography variant="h4" sx={{ textAlign: "center" }}>
             Login
@@ -108,7 +108,7 @@ function Login() {
           >
             {(formik) => (
               <form onSubmit={formik.handleSubmit}>
-                <Stack spacing={2}>
+                <Stack spacing={3}>
                   <FormControl
                     sx={{ m: 1 }}
                     variant="standard"

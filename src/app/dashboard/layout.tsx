@@ -6,6 +6,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Return null instead of a div that will be immediately unmounted
+
   return (
     <html lang="en">
       <body>

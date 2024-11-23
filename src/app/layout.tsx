@@ -17,12 +17,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ReduxWrapper>
-      <html lang="en" className={inter.className}>
-        <body>
+    <html lang="en" className={inter.className}>
+      <body>
+        <ReduxWrapper>
           <ProviderWrapper>{children}</ProviderWrapper>
-        </body>
-      </html>
-    </ReduxWrapper>
+        </ReduxWrapper>
+      </body>
+    </html>
   );
 }

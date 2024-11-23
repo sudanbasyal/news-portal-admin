@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
+import DashboardLayout from "./DashboardLayout/DashboardLayout";
 
 export default function AuthWrapper({
   children,
@@ -9,15 +10,15 @@ export default function AuthWrapper({
 }>) {
   const router = useRouter();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token"); // Replace with your auth logic
+  useLayoutEffect(() => {
+    const token = localStorage.getItem("token");
     if (!token) {
-      router.push("/login"); // Redirect to login if no token
+      router.replace("/login");
     }
   }, []);
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
+
+  const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+  if (!token) return null;
+
+  return <DashboardLayout>{children}</DashboardLayout>;
 }

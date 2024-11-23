@@ -73,7 +73,6 @@ function page() {
     formData.append("categoryId", values.categoryId.toString());
 
     try {
-      console.log(id[0], Object.fromEntries(formData.entries()));
       await updateArticle({ id: id[0], articleData: formData }).unwrap();
       enqueueSnackbar("Article created successfully", { variant: "success" });
       router.push("/dashboard/articles");
@@ -82,14 +81,6 @@ function page() {
       console.error("Error creating article:", err);
     }
   };
-
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop: (acceptedFiles: File[]) => {
-      setImageFile(acceptedFiles[0]);
-    },
-    accept: { "image/png": [".png"], "image/jpeg": [".jpeg", ".jpg"] },
-    maxFiles: 1,
-  });
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -107,152 +98,178 @@ function page() {
           updateImage: false,
           categoryId: articleData?.categoryId || "",
         }}
-        // validationSchema={validationSchema}
+        validationSchema={validationSchema}
         onSubmit={handleSubmit}
         enableReinitialize={true}
       >
-        {({ setFieldValue, values, touched, errors }) => (
-          <Form>
-            <Stack spacing={2}>
-              {/* Title Field */}
-              <TextField
-                label="Title"
-                name="title"
-                value={values.title}
-                onChange={(e) => setFieldValue("title", e.target.value)}
-                error={touched.title && Boolean(errors.title)}
-                helperText={touched.title && errors.title}
-                fullWidth
-                required
-              />
+        {({ setFieldValue, values, touched, errors }) => {
+          const { getRootProps, getInputProps } = useDropzone({
+            onDrop: (acceptedFiles) => {
+              const file = acceptedFiles[0];
+              if (file) {
+                setFieldValue("image", file); // Update Formik's image field
+                setImageFile(file); // Update the local state
+              }
+            },
+            accept: {
+              "image/jpg": [".jpg"],
+              "image/jpeg": [".jpeg"],
+              "image/png": [".png"],
+              "image/svg+xml": [".svg"],
+            },
+            maxFiles: 1,
+          });
+          return (
+            <Form>
+              <Stack spacing={2}>
+                {/* Title Field */}
+                <TextField
+                  label="Title"
+                  name="title"
+                  value={values.title}
+                  onChange={(e) => setFieldValue("title", e.target.value)}
+                  error={touched.title && Boolean(errors.title)}
+                  helperText={touched.title && errors.title}
+                  fullWidth
+                  required
+                />
 
-              {/* Checkbox: Update Image */}
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={values.updateImage}
-                    onChange={(e) => {
-                      console.log(e.target.checked);
-                      setFieldValue("updateImage", e.target.checked);
+                {/* Checkbox: Update Image */}
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={values.updateImage}
+                      onChange={(e) => {
+                        setFieldValue("updateImage", e.target.checked);
+                      }}
+                    />
+                  }
+                  label="Update Image"
+                />
+
+                {/* Conditionally Render Dropzone */}
+                {values.updateImage && (
+                  <Box
+                    {...getRootProps()}
+                    sx={{
+                      border: "2px dashed #1976d2",
+                      padding: 2,
+                      borderRadius: 2,
+                      cursor: "pointer",
+                      textAlign: "center",
                     }}
-                  />
-                }
-                label="Update Image"
-              />
+                  >
+                    <input {...getInputProps()} />
+                    {imageFile ? (
+                      <Typography variant="body1" color="textSecondary">
+                        {imageFile.name} - {Math.round(imageFile.size / 1024)}{" "}
+                        KB
+                      </Typography>
+                    ) : (
+                      <Stack spacing={1} alignItems="center">
+                        <CloudUploadIcon color="primary" />
+                        <Typography variant="body2" color="textSecondary">
+                          Drag & drop an image or click to select one
+                        </Typography>
+                        {
+                          //show error message if file type is not supported
+                          touched.image && errors.image && (
+                            <Stack spacing={1} alignItems="center">
+                              <Typography variant="body2" color="error">
+                                {errors.image}
+                              </Typography>
+                            </Stack>
+                          )
+                        }
+                      </Stack>
+                    )}
+                  </Box>
+                )}
 
-              {/* Conditionally Render Dropzone */}
-              {values.updateImage && (
+                {/* Content Field */}
+                <TextField
+                  label="Content"
+                  name="content"
+                  value={values.content}
+                  onChange={(e) => setFieldValue("content", e.target.value)}
+                  error={touched.content && Boolean(errors.content)}
+                  helperText={touched.content && errors.content}
+                  fullWidth
+                  multiline
+                  rows={10}
+                  required
+                />
+
+                {/* Slug Field */}
+                <TextField
+                  label="Slug"
+                  name="slug"
+                  value={values.slug}
+                  onChange={(e) => setFieldValue("slug", e.target.value)}
+                  error={touched.slug && Boolean(errors.slug)}
+                  helperText={touched.slug && errors.slug}
+                  fullWidth
+                  required
+                />
+
+                {/* Is Breaking Field */}
+                <FormControl fullWidth required>
+                  <InputLabel>Breaking News</InputLabel>
+                  <Select
+                    label="Breaking News"
+                    name="isBreaking"
+                    value={values.isBreaking}
+                    onChange={(e) =>
+                      setFieldValue("isBreaking", e.target.value)
+                    }
+                  >
+                    <MenuItem value={1}>Yes</MenuItem>
+                    <MenuItem value={0}>No</MenuItem>
+                  </Select>
+                </FormControl>
+
+                {/* Category Field */}
+                <FormControl
+                  fullWidth
+                  error={touched.categoryId && Boolean(errors.categoryId)}
+                  required
+                >
+                  <InputLabel>Category</InputLabel>
+                  <Select
+                    label="Category"
+                    name="categoryId"
+                    value={values.categoryId}
+                    onChange={(e) =>
+                      setFieldValue("categoryId", e.target.value)
+                    }
+                  >
+                    {categories?.map((category: Category) => (
+                      <MenuItem key={category.id} value={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {touched.categoryId && errors.categoryId && (
+                    <FormHelperText>{errors.categoryId}</FormHelperText>
+                  )}
+                </FormControl>
+
+                {/* Submit Button */}
                 <Box
-                  {...getRootProps()}
                   sx={{
-                    border: "2px dashed #1976d2",
-                    padding: 2,
-                    borderRadius: 2,
-                    cursor: "pointer",
-                    textAlign: "center",
+                    marginTop: 2,
+                    display: "flex",
+                    justifyContent: "center",
                   }}
                 >
-                  <input {...getInputProps()} />
-                  {imageFile ? (
-                    <Typography variant="body1" color="textSecondary">
-                      {imageFile.name} - {Math.round(imageFile.size / 1024)} KB
-                    </Typography>
-                  ) : (
-                    <Stack spacing={1} alignItems="center">
-                      <CloudUploadIcon color="primary" />
-                      <Typography variant="body2" color="textSecondary">
-                        Drag & drop an image or click to select one
-                      </Typography>
-                      {
-                        //show error message if file type is not supported
-                        touched.image && errors.image && (
-                          <Stack spacing={1} alignItems="center">
-                            <Typography variant="body2" color="error">
-                              {errors.image}
-                            </Typography>
-                          </Stack>
-                        )
-                      }
-                    </Stack>
-                  )}
+                  <Button type="submit" variant="contained" color="primary">
+                    Update Article
+                  </Button>
                 </Box>
-              )}
-
-              {/* Content Field */}
-              <TextField
-                label="Content"
-                name="content"
-                value={values.content}
-                onChange={(e) => setFieldValue("content", e.target.value)}
-                error={touched.content && Boolean(errors.content)}
-                helperText={touched.content && errors.content}
-                fullWidth
-                multiline
-                rows={10}
-                required
-              />
-
-              {/* Slug Field */}
-              <TextField
-                label="Slug"
-                name="slug"
-                value={values.slug}
-                onChange={(e) => setFieldValue("slug", e.target.value)}
-                error={touched.slug && Boolean(errors.slug)}
-                helperText={touched.slug && errors.slug}
-                fullWidth
-                required
-              />
-
-              {/* Is Breaking Field */}
-              <FormControl fullWidth required>
-                <InputLabel>Breaking News</InputLabel>
-                <Select
-                  label="Breaking News"
-                  name="isBreaking"
-                  value={values.isBreaking}
-                  onChange={(e) => setFieldValue("isBreaking", e.target.value)}
-                >
-                  <MenuItem value={1}>Yes</MenuItem>
-                  <MenuItem value={0}>No</MenuItem>
-                </Select>
-              </FormControl>
-
-              {/* Category Field */}
-              <FormControl
-                fullWidth
-                error={touched.categoryId && Boolean(errors.categoryId)}
-                required
-              >
-                <InputLabel>Category</InputLabel>
-                <Select
-                  label="Category"
-                  name="categoryId"
-                  value={values.categoryId}
-                  onChange={(e) => setFieldValue("categoryId", e.target.value)}
-                >
-                  {categories?.map((category: Category) => (
-                    <MenuItem key={category.id} value={category.id}>
-                      {category.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {touched.categoryId && errors.categoryId && (
-                  <FormHelperText>{errors.categoryId}</FormHelperText>
-                )}
-              </FormControl>
-
-              {/* Submit Button */}
-              <Box
-                sx={{ marginTop: 2, display: "flex", justifyContent: "center" }}
-              >
-                <Button type="submit" variant="contained" color="primary">
-                  Update Article
-                </Button>
-              </Box>
-            </Stack>
-          </Form>
-        )}
+              </Stack>
+            </Form>
+          );
+        }}
       </Formik>
     </Box>
   );

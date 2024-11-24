@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useLayoutEffect } from "react";
+import { useEffect, useState } from "react";
 import DashboardLayout from "./DashboardLayout/DashboardLayout";
 
 export default function AuthWrapper({
@@ -9,15 +9,23 @@ export default function AuthWrapper({
   children: React.ReactNode;
 }>) {
   const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    setIsClient(true);
     const token = localStorage.getItem("token");
     if (!token) {
       router.replace("/login");
     }
   }, []);
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+  // During SSR and initial client render, return a loading state or skeleton
+  if (!isClient) {
+    return null; // or return a loading spinner/skeleton
+  }
+
+  // Only check token after component has mounted on client
+  const token = localStorage.getItem("token");
   if (!token) return null;
 
   return <DashboardLayout>{children}</DashboardLayout>;

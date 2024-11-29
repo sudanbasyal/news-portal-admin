@@ -57,7 +57,7 @@ function Page() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [updateArticle] = useUpdateArticleMutation();
   const categories: Category[] = data?.data || [];
-
+  console.log("categories", articleData);
   const formik = useFormik({
     initialValues: {
       title: articleData?.title || "",
@@ -132,6 +132,7 @@ function Page() {
           <FormControlLabel
             control={
               <Checkbox
+                color="warning"
                 checked={formik.values.updateImage}
                 onChange={(e) =>
                   formik.setFieldValue("updateImage", e.target.checked)
@@ -146,7 +147,7 @@ function Page() {
             <Box
               {...getRootProps()}
               sx={{
-                border: "2px dashed #1976d2",
+                border: "2px dashed #F28627",
                 padding: 2,
                 borderRadius: 2,
                 cursor: "pointer",
@@ -160,7 +161,7 @@ function Page() {
                 </Typography>
               ) : (
                 <Stack spacing={1} alignItems="center">
-                  <CloudUploadIcon color="primary" />
+                  <CloudUploadIcon color="warning" />
                   <Typography variant="body2" color="textSecondary">
                     Drag & drop an image or click to select one
                   </Typography>
@@ -251,7 +252,14 @@ function Page() {
               justifyContent: "center",
             }}
           >
-            <Button type="submit" variant="contained" color="primary">
+            <Button
+              type="submit"
+              variant="contained"
+              color="warning"
+              sx={{
+                height: "44px",
+              }}
+            >
               Update Article
             </Button>
           </Box>

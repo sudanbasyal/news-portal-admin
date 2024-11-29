@@ -52,7 +52,7 @@ const ArticleForm = () => {
       image: null,
       content: "",
       slug: "",
-      isBreaking: 0,
+      isBreaking: "",
       categoryId: "",
     },
     validationSchema,
@@ -64,7 +64,9 @@ const ArticleForm = () => {
       }
       formData.append("content", values.content);
       formData.append("slug", values.slug);
-      formData.append("isBreaking", values.isBreaking.toString());
+      if (values.isBreaking !== null) {
+        formData.append("isBreaking", values.isBreaking.toString());
+      }
       formData.append("categoryId", values.categoryId.toString());
 
       try {
@@ -117,7 +119,7 @@ const ArticleForm = () => {
           <Box
             {...getRootProps()}
             sx={{
-              border: "2px dashed #1976d2",
+              border: "2px dashed #F28627",
               padding: 2,
               borderRadius: 2,
               cursor: "pointer",
@@ -132,7 +134,7 @@ const ArticleForm = () => {
               </Typography>
             ) : (
               <Stack spacing={1} alignItems="center">
-                <CloudUploadIcon color="primary" />
+                <CloudUploadIcon color="warning" />
                 <Typography variant="body2" color="textSecondary">
                   Drag & drop an image or click to select one
                 </Typography>
@@ -213,12 +215,19 @@ const ArticleForm = () => {
 
           <Box
             sx={{
-              marginTop: 2,
+              marginTop: 4,
               display: "flex",
               justifyContent: "center",
             }}
           >
-            <Button type="submit" variant="contained" color="primary">
+            <Button
+              type="submit"
+              variant="contained"
+              color="warning"
+              sx={{
+                height: "44px",
+              }}
+            >
               Create Article
             </Button>
           </Box>

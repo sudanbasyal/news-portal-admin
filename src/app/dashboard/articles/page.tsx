@@ -1,5 +1,6 @@
 "use client";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import {
   Box,
   Button,
@@ -16,18 +17,36 @@ import {
   Typography,
   SelectChangeEvent,
   useMediaQuery,
+  IconButton,
+  Menu,
+  Pagination,
 } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Article } from "../../../../interface/article";
+import { ArticleApiResponse, Article } from "../../../../interface/article";
 import { useGetAllArticlesQuery } from "../../../../redux/services/articles";
 
 const Page = () => {
   const router = useRouter();
-  const { data, isLoading, isError } = useGetAllArticlesQuery();
+  const [page, setPage] = useState(1);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { data, isLoading, isError } = useGetAllArticlesQuery({
+    page,
+    limit: 6,
+  });
   const [filter, setFilter] = useState("All");
-  const articles: Article[] = data?.data || [];
+  const articlesResponse: ArticleApiResponse = data || {
+    message: "",
+    articles: [],
+    meta: {
+      total: 0,
+      page: 1,
+      lastPage: 1,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    },
+  };
 
   const handleCreateArticle = () => {
     router.push("/dashboard/create-article"); // Navigate to the article creation page
@@ -41,7 +60,7 @@ const Page = () => {
     console.log(`Article ID: ${articleId} status changed to ${newStatus}`);
   };
 
-  const filteredArticles = articles.filter(
+  const filteredArticles = articlesResponse?.articles.filter(
     (article: Article) => filter === "All" || article.status === filter
   );
 
@@ -50,6 +69,23 @@ const Page = () => {
   // };
 
   const isMdDown = useMediaQuery((theme) => theme.breakpoints.down("md"));
+
+  // Add menu handlers
+  const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleFilterClose = () => {
+    setAnchorEl(null);
+  };
+
+  // Add pagination handler
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value);
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -66,36 +102,70 @@ const Page = () => {
           <Typography variant="h4">Articles Dashboard</Typography>
         </Grid2>
         <Grid2 size={{ xs: 12, md: 6 }} textAlign={isMdDown ? "start" : "end"}>
+          {/* <IconButton
+            color="primary"
+            onClick={handleFilterClick}
+            sx={{ mr: 1 }}
+          >
+            <FilterListIcon />
+          </IconButton> */}
           <Button
             variant="contained"
-            color="primary"
+            color="warning"
             startIcon={<AddCircleIcon />}
             onClick={handleCreateArticle}
           >
             Add New
           </Button>
-        </Grid2>
-        <Grid2 size={{ xs: 12 }}>
-          <FormControl fullWidth>
-            <InputLabel>Filter by Status</InputLabel>
-            <Select
-              value={filter}
-              onChange={handleStatusChange}
-              label="Filter by Status"
-            >
-              <MenuItem value="All">All</MenuItem>
-              <MenuItem value="draft">Draft</MenuItem>
-              <MenuItem value="published">Published</MenuItem>
-              <MenuItem value="archived">Archived</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid2>
 
-        {/* Filter Section */}
+          {/* Filter Menu */}
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleFilterClose}
+          >
+            <MenuItem
+              onClick={() => {
+                setFilter("All");
+                handleFilterClose();
+              }}
+              selected={filter === "All"}
+            >
+              All
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setFilter("draft");
+                handleFilterClose();
+              }}
+              selected={filter === "draft"}
+            >
+              Draft
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setFilter("published");
+                handleFilterClose();
+              }}
+              selected={filter === "published"}
+            >
+              Published
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setFilter("archived");
+                handleFilterClose();
+              }}
+              selected={filter === "archived"}
+            >
+              Archived
+            </MenuItem>
+          </Menu>
+        </Grid2>
 
         {/* Article List */}
         <Grid2 size={{ xs: 12 }}>
-          <Grid2 container spacing={2}>
+          <Grid2 container spacing={2} justifyContent="center">
             <Grid2 size={{ xs: 12 }}>
               <Typography variant="h6">
                 {filteredArticles.length
@@ -104,7 +174,7 @@ const Page = () => {
               </Typography>
             </Grid2>
             {filteredArticles.length > 0 &&
-              filteredArticles.map((article) => (
+              filteredArticles.map((article: Article) => (
                 <Grid2 key={article.id}>
                   <Card
                     sx={{
@@ -154,7 +224,7 @@ const Page = () => {
                       </Typography>
                       <Chip
                         label={article.category.name}
-                        color="primary"
+                        color="warning"
                         sx={{ marginBottom: 2 }}
                       />
                       <Typography
@@ -179,29 +249,14 @@ const Page = () => {
 
                     {/* Card Actions with buttons for changing status */}
                     <CardActions sx={{ justifyContent: "space-between" }}>
-                      {article.status === "draft" && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() =>
-                            handleUpdateStatus(article.id, "published")
-                          }
-                        >
-                          Publish
-                        </Button>
-                      )}
-
-                      {article.status === "published" && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() =>
-                            handleUpdateStatus(article.id, "archived")
-                          }
-                        >
-                          Archive
-                        </Button>
-                      )}
+                      <Button
+                        size="small"
+                        color="warning"
+                        variant="outlined"
+                        onClick={() => console.log("preview")}
+                      >
+                        Preview
+                      </Button>
 
                       <Button
                         size="small"
@@ -218,6 +273,21 @@ const Page = () => {
                 </Grid2>
               ))}
           </Grid2>
+        </Grid2>
+
+        {/* Add Pagination */}
+        <Grid2
+          size={{ xs: 12 }}
+          sx={{ mt: 4, display: "flex", justifyContent: "center" }}
+        >
+          <Pagination
+            count={articlesResponse?.meta.lastPage || 1}
+            page={page}
+            onChange={handlePageChange}
+            sx={{
+              color: "red",
+            }}
+          />
         </Grid2>
       </Grid2>
     </Box>

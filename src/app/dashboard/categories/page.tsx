@@ -152,7 +152,7 @@ export default function Page() {
     >
       <Grid2 size={6}>
         <Button
-          color="primary"
+          color="warning"
           startIcon={<AddIcon />}
           onClick={handleOpenDialog}
           sx={{ marginBottom: 2 }}

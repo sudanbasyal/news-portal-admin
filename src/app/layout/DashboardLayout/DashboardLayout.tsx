@@ -53,21 +53,21 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     >
       <Stack direction="row" justifyContent="center" alignItems="center">
         <Grid2 container spacing={2} alignItems="center">
-          <Grid2 size={{ xs: 4 }}>
+          <Grid2 size={{ xs: 12 }} textAlign="center">
             <Image
               src="/logo.png"
               alt="logo"
               width={80}
               height={80}
               style={{
-                objectFit: "contain",
+                objectFit: "cover",
               }}
               unoptimized
             />
           </Grid2>
           <Grid2 size={{ xs: 8 }}>
             <Typography variant="h6" noWrap component="div">
-              News Portal
+              Dashboard
             </Typography>
           </Grid2>
         </Grid2>
@@ -77,14 +77,17 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         {menuItems.map((item) => (
           <ListItemButton
             key={item.id}
-            selected={tab === item.title.toLowerCase()}
+            sx={{
+              backgroundColor:
+                tab === item.title.toLowerCase() ? "#f2972733" : "transparent",
+            }}
             onClick={() => {
               handleNavigation(item.path);
               dispatch(setSelectedItem(item.id));
             }}
           >
             <ListItemIcon>
-              <item.icon />
+              <item.icon sx={{ color: "#F29727" }} />
             </ListItemIcon>
             <ListItemText primary={item.title} />
           </ListItemButton>
@@ -94,7 +97,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <List>
         <ListItemButton onClick={handleLogout}>
           <ListItemIcon>
-            <Logout />
+            <Logout sx={{ color: "#F29727" }} />
           </ListItemIcon>
           <ListItemText primary="Logout" />
         </ListItemButton>
@@ -107,7 +110,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <CssBaseline />
       <AppBar
         position="fixed"
-        // color="error"
+        color="warning"
         sx={{
           width: { md: `calc(100% - ${drawerWidth}px)` },
           ml: { md: `${drawerWidth}px` },

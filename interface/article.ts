@@ -10,8 +10,8 @@ export interface Article {
   status: "draft" | "published" | "archived";
   isBreaking: boolean;
   category: {
-      id: number;
-      name: string;
+    id: number;
+    name: string;
   };
   createdAt: string;
   updatedAt: string;
@@ -19,21 +19,32 @@ export interface Article {
   comments: Comment[]; // Include comments here
 }
 
-
 export interface ArticleResponse {
-
-  data: Article[];
-
+  articles: Article[];
+  meta: {
+    total: number;
+    page: number;
+    lastPage: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
   length: number;
 
-  map: (arg0: (article: any) => { type: string; id: any }) => { type: string; id: any }[];
+  map: (
+    arg0: (article: any) => { type: string; id: any }
+  ) => { type: string; id: any }[];
 
   filter: (arg0: (article: any) => boolean) => any[];
-
 }
 
-
-export interface ArticleApiResponse{
-  message:string
-  data:Article,
+export interface ArticleApiResponse {
+  message: string;
+  articles: Article[];
+  meta: {
+    total: number;
+    page: number;
+    lastPage: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
 }

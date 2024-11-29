@@ -15,7 +15,7 @@ export default function AuthWrapper({
     setIsClient(true);
     const token = localStorage.getItem("token");
     if (!token) {
-      router.replace("/login");
+      router.replace("/");
     }
   }, []);
 

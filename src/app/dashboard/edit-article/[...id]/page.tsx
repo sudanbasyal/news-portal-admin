@@ -57,7 +57,7 @@ function Page() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [updateArticle] = useUpdateArticleMutation();
   const categories: Category[] = data?.data || [];
-  console.log("categories", articleData);
+
   const formik = useFormik({
     initialValues: {
       title: articleData?.title || "",

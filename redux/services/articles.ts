@@ -3,6 +3,7 @@ import {
   Article,
   ArticleApiResponse,
   ArticleResponse,
+  SingleArticleApiResponse,
 } from "../../interface/article";
 import { api } from "../api";
 
@@ -18,7 +19,7 @@ export const articlesApi = api.injectEndpoints({
       }),
       providesTags: [{ type: "Article", id: "LIST" }],
     }),
-    getArticleById: builder.query<ArticleApiResponse, string>({
+    getArticleById: builder.query<SingleArticleApiResponse, string>({
       query: (id) => ({
         url: `/article/${id}`,
         method: "GET",

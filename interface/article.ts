@@ -48,3 +48,7 @@ export interface ArticleApiResponse {
     hasPreviousPage: boolean;
   };
 }
+export interface SingleArticleApiResponse {
+  message: string;
+  data: Article; // Single article wrapped in data property
+}
